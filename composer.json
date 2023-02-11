@@ -1,0 +1,15 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Chum\\": ""
+    }
+  },
+  "require": {
+    "slim/slim": "^4.11",
+    "slim/psr7": "^1.6",
+    "slim/twig-view": "^3.3",
+    "slim/http": "^1.3",
+    "php-di/php-di": "^7.0",
+    "monolog/monolog": "^3.3"
+  }
+}
