@@ -1,1 +1,12 @@
-Hello Twig
+{% extends 'layout.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="p-5 rounded-3 bg-light text-center">
+        <div class="container-fluid">
+            <h1 class="display-5 fw-bold">Home</h1>
+            <p class="lead">{% trans %}core.hello{% endtrans %}</p>
+        </div>
+    </div>
+{% endblock %}

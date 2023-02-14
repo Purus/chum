@@ -2,22 +2,35 @@
 
 namespace Chum;
 
+use League\Flysystem\Filesystem;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Translation\Translator;
 
 abstract class BaseController
 {
+    protected UserRepository $userRepo;
     protected Twig $twig;
     protected LoggerInterface $logger;
+    protected MailerInterface $mailer;
+    protected Filesystem $filesystem;
+    protected Translator $translator;
 
-    public function __construct(Twig $twig, LoggerInterface $logger)
+    public function __construct(Twig $twig, Translator $translator, UserRepository $userRepo, LoggerInterface $logger, MailerInterface $mailer, Filesystem $filesystem)
     {
         $this->twig = $twig;
         $this->logger = $logger;
+        $this->userRepo = $userRepo;
+        $this->mailer = $mailer;
+        $this->filesystem = $filesystem;
+        $this->translator = $translator;
     }
 
     protected function redirectByName(ServerRequestInterface $request, $response, $route)
@@ -46,4 +59,13 @@ abstract class BaseController
         return $this->twig->render($response, $route, $data);
     }
 
+    public function sendEmail(Email $email): void
+    {
+        $this->mailer->send($email);
+    }
+
+    public function getFileSystem(): Filesystem
+    {
+        return $this->filesystem;
+    }
 }
