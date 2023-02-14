@@ -16,14 +16,14 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\MailerInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use Symfony\Component\Translation\Loader\FileLoader;
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\Loader\JsonFileLoader;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Slim\Views\TwigMiddleware;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
+use \Chum\Core\Controllers\TestController;
+use \Chum\Core\Controllers\InstallController;
 
 require './vendor/autoload.php';
 require './config/db.php';
@@ -140,8 +140,8 @@ if (defined('CHUM_DEV_MODE') && CHUM_DEV_MODE) {
     $errorHandler->registerErrorRenderer('text/html', HtmlErrorRenderer::class);
 }
 
-$app->get('/', [\Chum\TestController::class, 'showBlank'])->setName("home");
-$app->get('/email', [\Chum\TestController::class, 'testEmail'])->setName("email");
-$app->get('/install', [\Chum\InstallController::class, 'index'])->setName("install");
+$app->get('/', [TestController::class, 'showBlank'])->setName("home");
+$app->get('/email', [TestController::class, 'testEmail'])->setName("email");
+$app->get('/install', [InstallController::class, 'index'])->setName("install");
 
 $app->run();

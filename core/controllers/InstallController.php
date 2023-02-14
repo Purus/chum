@@ -1,6 +1,7 @@
 <?php
-namespace Chum;
+namespace Chum\Core\Controllers;
 
+use Chum\Core\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Interfaces\ResponseInterface;
 

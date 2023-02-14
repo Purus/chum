@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Chum;
+namespace Chum\Core\Controllers;
 
+use Chum\Core\BaseController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Mime\Email;

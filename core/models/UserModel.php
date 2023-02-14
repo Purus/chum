@@ -1,6 +1,6 @@
 <?php
 
-namespace Chum;
+namespace Chum\Core\Models;
 
 class UserModel
 {

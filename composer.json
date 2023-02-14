@@ -1,7 +1,9 @@
 {
   "autoload": {
     "psr-4": {
-      "Chum\\": ""
+      "Chum\\": "",
+      "Chum\\Controllers\\": "./controllers",
+      "Chum\\Core\\": "./core"
     }
   },
   "require": {

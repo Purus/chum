@@ -1,8 +1,7 @@
 <?php
 
 namespace Chum;
-
-use Doctrine\DBAL\Connection;
+use Chum\Core\BaseRepository;
 
 class UserRepository extends BaseRepository
 {
