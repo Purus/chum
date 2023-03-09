@@ -22,6 +22,10 @@ https://www.joyk.com/dig/detail/1608040736234854 - query transaction
 # Commands
 
 ```
+npx tailwindcss -i ./input.css -o ./assets/css/output.css
+```
+
+```
 composer dump-autoload -o
 ```
 

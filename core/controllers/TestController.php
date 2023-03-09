@@ -12,11 +12,8 @@ class TestController extends BaseController
 {
     public function showBlank(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        dump($this->userRepo->findAll());
-
-        if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && !CHUM_DB_INSTALLED)) {
-            return $this->redirectByName($request, $response, 'install');
-
+        if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && CHUM_DB_INSTALLED != '1')) {
+            return $this->redirectByName($response, 'install');
         }
 
         // echo $this->translator->trans("core.hello");

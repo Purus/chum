@@ -2,8 +2,8 @@
   "autoload": {
     "psr-4": {
       "Chum\\": "",
-      "Chum\\Controllers\\": "./controllers",
-      "Chum\\Core\\": "./core"
+      "Chum\\Controllers\\": "core/controllers",
+      "Chum\\Core\\": "core"
     }
   },
   "require": {
@@ -19,9 +19,19 @@
     "symfony/translation": "^6.2",
     "symfony/yaml": "^6.2",
     "symfony/twig-bridge": "^6.2",
-    "doctrine/dbal": "^3.6"
+    "doctrine/dbal": "^3.6",
+    "odan/session": "^6.1",
+    "symfony/form": "^6.2",
+    "symfony/security-csrf": "^6.2",
+    "symfony/http-foundation": "^6.2",
+    "symfony/validator": "^6.2",
+    "symfony/psr-http-message-bridge": "^2.1",
+    "symfony/intl": "^6.2",
+    "aura/sql": "^5.0.1",
+    "nyholm/psr7": "^1.5"
   },
   "require-dev": {
-    "symfony/var-dumper": "^6.2"
+    "symfony/var-dumper": "^6.2",
+    "vimeo/psalm": "^5.7"
   }
 }

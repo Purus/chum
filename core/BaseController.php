@@ -3,16 +3,26 @@
 namespace Chum\Core;
 
 use League\Flysystem\Filesystem;
+use Odan\Session\SessionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Interfaces\RouteParserInterface;
 use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Translation\Translator;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
+//TODO refer more methods from https://symfony.com/doc/current/controller.html#the-base-controller-class-services
 abstract class BaseController
 {
     protected \Chum\UserRepository $userRepo;
@@ -21,8 +31,15 @@ abstract class BaseController
     protected MailerInterface $mailer;
     protected Filesystem $filesystem;
     protected Translator $translator;
+    // protected SessionInterface $session;
+    protected Session $session;
+    protected FormFactoryInterface $form;
+    protected RouteParserInterface $routeParser;
 
-    public function __construct(Twig $twig, Translator $translator, \Chum\UserRepository $userRepo, LoggerInterface $logger, MailerInterface $mailer, Filesystem $filesystem)
+    public function __construct(Twig $twig, RouteParserInterface $routeParser, FormFactoryInterface $form, Translator $translator, \Chum\UserRepository $userRepo, LoggerInterface $logger, MailerInterface $mailer, 
+    // SessionInterface $session, 
+    Session $session, 
+    Filesystem $filesystem)
     {
         $this->twig = $twig;
         $this->logger = $logger;
@@ -30,16 +47,61 @@ abstract class BaseController
         $this->mailer = $mailer;
         $this->filesystem = $filesystem;
         $this->translator = $translator;
+        $this->session = $session;
+        $this->form = $form;
+        $this->routeParser = $routeParser;
     }
 
-    protected function redirectByName(ServerRequestInterface $request, $response, $route)
+    protected function redirectByName(ResponseInterface $response, String $routeName)
     {
-        $routeParser = RouteContext::fromRequest($request)->getRouteParser();
-        $url = $routeParser->urlFor($route);
+        $url = $this->routeParser->urlFor($routeName);
+        //TODO look to avoid getting response as paramter
         return $response->withHeader('Location', $url)->withStatus(302);
     }
 
-    protected function render(ServerRequestInterface $request, $response, $route, $data): ResponseInterface
+    /**
+     * Creates and returns a Form instance from the type of the form.
+     */
+    protected function createForm(string $type, mixed $data = null, array $options = []): FormInterface
+    {
+        return $this->form->create($type, $data, $options);
+    }
+
+    /**
+     * Creates and returns a form builder instance.
+     */
+    protected function createFormBuilder(mixed $data = null, array $options = []): FormBuilderInterface
+    {
+        return $this->form->createBuilder(FormType::class, $data, $options);
+    }
+
+/*     protected function getUrlByRoute(ServerRequestInterface $request, $route)
+    {
+        $routeParser = RouteContext::fromRequest($request)->getRouteParser();
+        return $routeParser->urlFor($route);
+    } */
+
+/*     protected function redirect(string $url, int $status = 302): RedirectResponse
+    {
+        return new RedirectResponse($url, $status);
+    } */
+
+    /**
+     * Returns a RedirectResponse to the given route with the given parameters.
+     *
+     * @param int $status The HTTP status code (302 "Found" by default)
+     */
+/*     protected function redirectToRoute(string $route, array $parameters = [], int $status = 302): RedirectResponse
+    {
+        return $this->redirect($this->generateUrl($route, $parameters), $status);
+    }
+ */
+    protected function generateUrl(string $route, array $parameters = []): string
+    {
+        return $this->routeParser->urlFor($route, $parameters);
+    }
+
+    protected function render(ServerRequestInterface $request, ResponseInterface $response, String $templateName, array $data): ResponseInterface
     {
         $response = $response->withoutHeader('Server');
         $response = $response->withAddedHeader('X-Powered-By', 'ChumChum');
@@ -55,7 +117,7 @@ abstract class BaseController
             }
         }
 
-        return $this->twig->render($response, $route, $data);
+        return $this->twig->render($response, $templateName, $data);
     }
 
     public function sendEmail(Email $email): void

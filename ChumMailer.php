@@ -9,10 +9,9 @@ use Symfony\Component\Mime\Email;
 
 final class ChumMailer
 {
-    #[Inject('MailerInterface')]
     private MailerInterface $mailer;
 
-    public function __construct(#[Inject('MailerInterface')] MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
     }

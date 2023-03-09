@@ -1,0 +1,36 @@
+{% extends 'base.install.twig' %}
+
+{% block content %}
+
+<div class="container w-1/2 mx-auto">
+  <ul class="steps my-4 w-full">
+    <li class="step step-primary">Setup</li>
+    <li class="step">Database</li>
+    <li class="step">Finish</li>
+  </ul>
+</div>
+
+<div class="container w-1/2 mx-auto">
+  <div class="card w-full p-2 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title">Social Network Setup</h2>
+
+      {% for message in  errors %}
+      <div class="alert alert-error shadow-lg">
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+
+      <div class="flex flex-wrap -mx-3 mb-2 bg-white">
+        {{ form(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#form_lang').change(function () {
+  });
+</script>
+
+{% endblock %}

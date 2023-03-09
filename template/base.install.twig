@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" class="h-100">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A skeleton for a simple PHP application built on Slim Framework 4." />
+  <meta name="author" content="N'Bayramberdiyev" />
+  <title>Chum Installer</title>
+  <link rel="shortcut icon" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/output.css" />
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <main>
+    <div class="container mx-auto">
+      <div class="text-center my-4 text-2xl font-bold">Welcome to Chum Installer</div>
+      {% block content %}{% endblock %}
+    </div>
+    <br />
+  </main>
+</body>
+
+</html>

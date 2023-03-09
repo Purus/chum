@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="5"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+>
+    <projectFiles>
+        <directory name="core" />
+        <directory name="core/controllers" />
+        <file name="ChumDb.php" />
+        <file name="ChumMailer.php" />
+        <file name="UserRepository.php" />
+        <file name="cache/36/366f3031d265cfe09ced026e499dd108.php" />
+        <file name="cache/5c/5cf8fed44e81916b92be3e4aa21946d6.php" />
+        <file name="cache/8c/8c217ba2459dc74a22af58701f6f93ac.php" />
+        <file name="cache/d2/d23dfbc5ab4a641a285dfd3f9bd4b6eb.php" />
+        <file name="cache/d6/d6e6a7f3c12e084a07455c019e8e54e1.php" />
+        <file name="cache/d9/d9f019e06483adde95f98efcab4ccae2.php" />
+        <file name="cache/df/df82e771076cda47834538723a49e584.php" />
+        <file name="config/db.php" />
+        <file name="core/BaseController.php" />
+        <file name="core/BaseRepository.php" />
+        <file name="core/ChumErrorInstaller.php" />
+        <file name="core/HttpExceptionMiddleware.php" />
+        <file name="core/controllers/InstallAdminConfig.php" />
+        <file name="core/controllers/InstallAdminConfigType.php" />
+        <file name="core/controllers/InstallAppConfig.php" />
+        <file name="core/controllers/InstallAppConfigType.php" />
+        <file name="core/controllers/InstallController.php" />
+        <file name="core/controllers/InstallDbConfig.php" />
+        <file name="core/controllers/InstallDbConfigType.php" />
+        <file name="core/controllers/TestController.php" />
+        <file name="core/models/UserModel.php" />
+        <file name="index.php" />
+        <file name="vendor/autoload.php" />
+        <file name="vendor/composer/ClassLoader.php" />
+        <file name="vendor/composer/InstalledVersions.php" />
+        <file name="vendor/composer/autoload_classmap.php" />
+        <file name="vendor/composer/autoload_files.php" />
+        <file name="vendor/composer/autoload_namespaces.php" />
+        <file name="vendor/composer/autoload_psr4.php" />
+        <file name="vendor/composer/autoload_real.php" />
+        <file name="vendor/composer/autoload_static.php" />
+        <file name="vendor/composer/installed.php" />
+        <file name="vendor/composer/platform_check.php" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>

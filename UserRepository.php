@@ -12,10 +12,11 @@ class UserRepository extends BaseRepository
     {
         return "chum_users";
     }
+    
 	/**
 	 * @return string
 	 */
 	public function getModel(): string {
-        return "Chum\UserModel";
+        return "Chum\Core\Models\UserModel";
 	}
 }
