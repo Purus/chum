@@ -1,6 +1,6 @@
 <?php
 
-namespace Chum;
+namespace Chum\Core;
 use Chum\Core\BaseRepository;
 
 class UserRepository extends BaseRepository

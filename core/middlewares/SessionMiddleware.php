@@ -1,6 +1,6 @@
 <?php
 
-namespace Chum\Core;
+namespace Chum\Middlewares;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

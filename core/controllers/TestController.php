@@ -4,9 +4,12 @@ declare(strict_types=1);
 namespace Chum\Core\Controllers;
 
 use Chum\Core\BaseController;
+use Chum\Core\NewMainMenuEvent;
+use Chum\Core\PluginService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TestController extends BaseController
 {
@@ -17,7 +20,7 @@ class TestController extends BaseController
         }
 
         // echo $this->translator->trans("core.hello");
-
+     
         return $this->render($request, $response, 'blank.twig', array());
     }
 
