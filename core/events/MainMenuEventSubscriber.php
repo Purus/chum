@@ -18,6 +18,6 @@ class MainMenuEventSubscriber extends EventSubscriber
 
   public function onMainMenuAdd(NewMainMenuEvent $event)
   {
-    echo $event->getMenu();
+    // echo $event->getMenu();
   }
 }

@@ -4,3 +4,4 @@ vendor/
 /logs/*
 !/logs/.htaccess
 cache/
+node_modules/

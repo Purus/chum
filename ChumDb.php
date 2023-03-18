@@ -3,6 +3,7 @@
 namespace Chum;
 
 use Aura\Sql\ExtendedPdo;
+use PDO;
 
 final class ChumDb
 {
@@ -32,5 +33,25 @@ final class ChumDb
     public function queryForObjects(string $sql, $className, array $params = [])
     {
         return $this->pdo->fetchObjects($sql, $params, $className);
+    }
+
+    private function run($sql, array $params = null)
+    {
+        $stmt = $this->pdo->prepare($sql);
+
+        if ($params !== null) {
+            foreach ($params as $key => $value) {
+                $paramType = PDO::PARAM_STR;
+                if (is_int($value))
+                    $paramType = PDO::PARAM_INT;
+                elseif (is_bool($value))
+                    $paramType = PDO::PARAM_BOOL;
+
+                $stmt->bindValue(is_int($key) ? $key + 1 : $key, $value, $paramType);
+            }
+        }
+        $stmt->execute();
+
+        return $stmt;
     }
 }

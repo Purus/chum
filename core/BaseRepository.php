@@ -21,4 +21,13 @@ abstract class BaseRepository
     {
         return $this->db->queryForObjects("SELECT * FROM " . $this->getTableName() . " ;", $this->getModel());
     }
+
+    public function deleteById(string $id): void
+    {
+        $id = (int) $id;
+        if ($id > 0) {
+            $sql = 'DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?';
+            $result = $this->db->run($sql, array($id));
+        }
+    }
 }

@@ -1,6 +1,10 @@
 name: Blogs
-description: Blogs for Chum
+description: Blogs plugin for Chum
 version: 1.0.0
+developer:
+  name: Chum
+  email: info@chum.software
+  url: https://chum.software
 tags:
   - blogs
   - posts

@@ -2,3 +2,13 @@ core:
   hello: "Hey! I am Purusothaman."
 installer:
   title: "ChumChum Installation"  
+admin:
+  settings:
+    sidebar:
+      dashboard: Dashboard  
+      settings: Settings  
+      users: Users  
+      plugins: Plugins  
+      themes: Themes  
+      general: General  
+      menus: Menus  

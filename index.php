@@ -24,5 +24,4 @@ require CHUM_DIR_ROOT . DS . 'core' . DS . 'middleware.php';
 require CHUM_DIR_ROOT . DS . 'core' . DS . 'routes.php';
 require CHUM_DIR_ROOT . DS . 'core' . DS . 'bootstrap.php';
 
-// dump($app->getRouteCollector()->getRoutes());
 $app->run();

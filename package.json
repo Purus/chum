@@ -1,0 +1,17 @@
+{
+  "name": "chum",
+  "version": "1.0.0",
+  "private": "true",
+  "scripts": {
+    "build": "tailwindcss build ./tailwind.css -o ./assets/css/output.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.9",
+    "daisyui": "^2.51.4",
+    "tailwindcss": "^3.2.7"
+  }
+}

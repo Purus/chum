@@ -38,7 +38,7 @@ abstract class BaseController
     protected RouteParserInterface $routeParser;
     protected EventDispatcher $events;
 
-    protected string $title;
+    protected string $title = "";
 
     public function __construct(
         Twig $twig, EventDispatcher $events, RouteParserInterface $routeParser, FormFactoryInterface $form, Translator $translator, LoggerInterface $logger, MailerInterface $mailer,
@@ -127,8 +127,7 @@ abstract class BaseController
                 $response = $response->withAddedHeader('Strict-Transport-Security', 'max-age=63072000');
             }
         }
-
-        return $this->twig->render($response, $templateName, $data);
+        return $this->twig->render($response, $templateName, array_merge(array("title" => $this->title), $data));
     }
 
     public function sendEmail(Email $email): void

@@ -10,6 +10,8 @@ class Plugin
     private string $description;
     private bool $isActive;
     private string $version;
+    private string $devName;
+    private string $settingsRouteName;
 
     /**
      * Get the value of id
@@ -151,6 +153,54 @@ class Plugin
     public function setVersion(string $version): self
     {
         $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of devName
+     *
+     * @return string
+     */
+    public function getDevName(): string
+    {
+        return $this->devName;
+    }
+
+    /**
+     * Set the value of devName
+     *
+     * @param string $devName
+     *
+     * @return self
+     */
+    public function setDevName(string $devName): self
+    {
+        $this->devName = $devName;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of settingsRouteName
+     *
+     * @return string
+     */
+    public function getSettingsRouteName(): string
+    {
+        return $this->settingsRouteName;
+    }
+
+    /**
+     * Set the value of settingsRouteName
+     *
+     * @param string $settingsRouteName
+     *
+     * @return self
+     */
+    public function setSettingsRouteName(string $settingsRouteName): self
+    {
+        $this->settingsRouteName = $settingsRouteName;
 
         return $this;
     }

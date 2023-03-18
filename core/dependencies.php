@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -39,53 +39,55 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         Twig::class => function (ContainerInterface $c): Twig {
             $defaultFormTheme = 'tailwind_2_layout.html.twig';
-    
+
             $appVariableReflection = new \ReflectionClass('\Symfony\Bridge\Twig\AppVariable');
             $vendorTwigBridgeDirectory = dirname($appVariableReflection->getFileName());
-    
+
             $path = array(
                 CHUM_TEMPLATE_PATH,
                 $vendorTwigBridgeDirectory . DS . 'Resources' . DS . 'views' . DS . 'Form',
             );
-    
+
             $translator = $c->get(Translator::class);
-    
+
             $twig = Twig::create($path, [
                 'cache' => CHUM_CACHE_PATH,
                 'autoescape' => false,
                 'debug' => true,
                 'form_themes' => 'form_div_layout.html.twig'
             ]);
-    
+            
             $twig->getEnvironment()->addGlobal('locale', $translator->getLocale());
             $twig->addExtension(new TranslationExtension($translator));
-    
+
             $formEngine = new TwigRendererEngine([$defaultFormTheme], $twig->getEnvironment());
-    
+
             $csrfGenerator = new UriSafeTokenGenerator();
             $csrfManager = new CsrfTokenManager($csrfGenerator);
-    
+
             $twig->getEnvironment()->addRuntimeLoader(new FactoryRuntimeLoader([
                 FormRenderer::class => function () use ($formEngine, $csrfManager) {
                         return new FormRenderer($formEngine, $csrfManager);
                     }
             ]));
-    
+
             $twig->addExtension(new FormExtension());
-        
+
             return $twig;
-    
-        },
+
+        }
+        ,
         LoggerInterface::class => function (ContainerInterface $c): Logger {
             $logger = new Logger('ChumChum');
-    
+
             $logger->pushProcessor(new IntrospectionProcessor());
-    
+
             $handler = new RotatingFileHandler('logs' . DS . 'logs.log', 5, Level::Error);
             $logger->pushHandler($handler);
-    
+
             return $logger;
-        },
+        }
+        ,
         Connection::class => function (ContainerInterface $container): Connection {
             $config = new \Doctrine\DBAL\Configuration();
             $connectionParams = array(
@@ -108,12 +110,14 @@ return function (ContainerBuilder $containerBuilder) {
                     PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
                 )
             );
-    
+
             return DriverManager::getConnection($connectionParams, $config);
-        },
+        }
+        ,
         PDO::class => function (ContainerInterface $container): PDO {
             return $container->get(Connection::class)->getWrappedConnection();
-        },
+        }
+        ,
         MailerInterface::class => function (ContainerInterface $container) {
             $dsn = sprintf(
                 '%s://%s:%s@%s:%s',
@@ -123,47 +127,52 @@ return function (ContainerBuilder $containerBuilder) {
                 "sandbox.smtp.mailtrap.io",
                 "587"
             );
-    
+
             return new Mailer(Transport::fromDsn($dsn));
-        },
+        }
+        ,
         Filesystem::class => function (ContainerInterface $container) {
             $adapter = new LocalFilesystemAdapter(CHUM_DIR_ROOT);
-    
+
             return new Filesystem($adapter);
-        },
+        }
+        ,
         Translator::class => function (ContainerInterface $c): Translator {
             $translator = new Translator("en");
-    
+
             /** @var string $locale */
             $locale = $_SESSION['locale'] ?? "en";
-    
+
             $translator->addLoader("yml", new YamlFileLoader());
             $translator->addResource(
                 'yml',
-               CHUM_DIR_ROOT  . DS . 'translations' . DS . $locale . '.yml',
+                CHUM_DIR_ROOT . DS . 'translations' . DS . $locale . '.yml',
                 $locale
             );
             return $translator;
-        },
+        }
+        ,
         FormFactoryInterface::class => function (ContainerInterface $c): FormFactoryInterface {
-    
+
             $csrfGenerator = new UriSafeTokenGenerator();
             $csrfManager = new CsrfTokenManager($csrfGenerator);
             $validator = Validation::createValidator();
-    
+
             return Forms::createFormFactoryBuilder()
                 ->addExtension(new CsrfExtension($csrfManager))
                 ->addExtension(new HttpFoundationExtension())
                 ->addExtension(new ValidatorExtension($validator))
                 ->getFormFactory();
-    
-        },
+
+        }
+        ,
         Psr\Http\Message\ResponseFactoryInterface::class => function (ContainerInterface $container): Psr\Http\Message\ResponseFactoryInterface {
             return $container->get(Slim\App::class)->getResponseFactory();
-        },
+        }
+        ,
         ErrorMiddleware::class => function (ContainerInterface $container) {
             $app = $container->get(Slim\App::class);
-    
+
             $errorMiddleware = new ErrorMiddleware(
                 $app->getCallableResolver(),
                 $app->getResponseFactory(),
@@ -171,11 +180,12 @@ return function (ContainerBuilder $containerBuilder) {
                 true,
                 true
             );
-    
+
             $errorMiddleware->setDefaultErrorHandler(Chum\Core\ChumErrorRenderer::class);
-    
+
             return $errorMiddleware;
-        },
-    
+        }
+        ,
+
     ]);
 };
