@@ -22,6 +22,26 @@ abstract class BaseRepository
         return $this->db->queryForObjects("SELECT * FROM " . $this->getTableName() . " ;", $this->getModel());
     }
 
+    public function save( $entity )
+    {
+        if ( $entity === null)
+        {
+            throw new \InvalidArgumentException('Argument must be instance of Entity and cannot be null');
+        }
+
+        $entity->id = (int) $entity->id;
+
+        if ( $entity->id > 0 )
+        {
+            $this->db->updateObject($this->getTableName(), $entity);
+        }
+        else
+        {
+            // $entity->setId (NULL);
+            $entity->id =  $this->db->insertObject($this->getTableName(), $entity);
+        }
+    }
+
     public function deleteById(string $id): void
     {
         $id = (int) $id;

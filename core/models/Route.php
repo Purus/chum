@@ -76,7 +76,7 @@ class Route
     public function setRoutePath($routePath)
     {
         if ($routePath) {
-            // $this->routePath = UTIL::removeFirstAndLastSlashes(trim($routePath));
+            // $this->routePath = removeFirstAndLastSlashes(trim($routePath));
             $this->routePath = trim($routePath);
             $this->routePathArray = explode('/', $this->routePath);
         }

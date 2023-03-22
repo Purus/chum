@@ -6,7 +6,6 @@ $dbPrefix = CHUM_DB_PREFIX;
 
 $sql =
     <<<EOT
-
 CREATE TABLE `{$dbPrefix}blogs_post` (
   `id` INTEGER(11) NOT NULL AUTO_INCREMENT,
   `authorId` INTEGER(11) NOT NULL,

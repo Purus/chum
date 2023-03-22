@@ -13,6 +13,6 @@ class AdminController extends BaseController
         $this->setPageTitle($this->translator->trans("blogs.admin.settings.page.title"));
 
         
-        return $this->render($request, $response, '@blogs/blogs.admin.twig', array());
+        return $this->render($request, $response, '@blogs/blogs.admin.twig');
     }
 }

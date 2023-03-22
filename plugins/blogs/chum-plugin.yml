@@ -1,8 +1,11 @@
 name: Blogs
+key: blogs
 description: Blogs plugin for Chum
 version: 1.0.0
+settingsRouteName: 'blog.admin.settings'
 developer:
-  name: Chum
+  id: 1
+  name: Chum Software
   email: info@chum.software
   url: https://chum.software
 tags:

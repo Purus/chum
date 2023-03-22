@@ -2,206 +2,21 @@
 
 namespace Chum\Core\Models;
 
-class Plugin
+use Chum\Core\Models\Entity;
+
+class Plugin extends Entity
 {
-    private string $id;
-    private string $name;
-    private string $key;
-    private string $description;
-    private bool $isActive;
-    private string $version;
-    private string $devName;
-    private string $settingsRouteName;
+    public string $name;
+    public string $key;
+    public string $description;
+    public bool $isActive;
+    public string $version;
+    public string $devName;
+    public string $settingsRouteName;
 
-    /**
-     * Get the value of id
-     *
-     * @return string
-     */
-    public function getId(): string
+    public function getRootDir()
     {
-        return $this->id;
+        return CHUM_PLUGIN_ROOT . DS. strtolower($this->key) . DS;
     }
 
-    /**
-     * Set the value of id
-     *
-     * @param string $id
-     *
-     * @return self
-     */
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of name
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set the value of name
-     *
-     * @param string $name
-     *
-     * @return self
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of key
-     *
-     * @return string
-     */
-    public function getKey(): string
-    {
-        return $this->key;
-    }
-
-    /**
-     * Set the value of key
-     *
-     * @param string $key
-     *
-     * @return self
-     */
-    public function setKey(string $key): self
-    {
-        $this->key = $key;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description
-     *
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set the value of description
-     *
-     * @param string $description
-     *
-     * @return self
-     */
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of isActive
-     *
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        return (bool)$this->isActive;
-    }
-
-    /**
-     * Set the value of isActive
-     *
-     * @param bool $isActive
-     *
-     * @return self
-     */
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of version
-     *
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    /**
-     * Set the value of version
-     *
-     * @param string $version
-     *
-     * @return self
-     */
-    public function setVersion(string $version): self
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of devName
-     *
-     * @return string
-     */
-    public function getDevName(): string
-    {
-        return $this->devName;
-    }
-
-    /**
-     * Set the value of devName
-     *
-     * @param string $devName
-     *
-     * @return self
-     */
-    public function setDevName(string $devName): self
-    {
-        $this->devName = $devName;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of settingsRouteName
-     *
-     * @return string
-     */
-    public function getSettingsRouteName(): string
-    {
-        return $this->settingsRouteName;
-    }
-
-    /**
-     * Set the value of settingsRouteName
-     *
-     * @param string $settingsRouteName
-     *
-     * @return self
-     */
-    public function setSettingsRouteName(string $settingsRouteName): self
-    {
-        $this->settingsRouteName = $settingsRouteName;
-
-        return $this;
-    }
 }

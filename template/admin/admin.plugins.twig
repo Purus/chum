@@ -1,91 +1,113 @@
 {% extends 'admin/admin.base.layout.twig' %}
 
 {% block content %}
-
-
-<div class="mb-4 border-b border-gray-200">
-    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent"
-        role="tablist">
-        <li class="mr-2" role="presentation">
-            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#profile"
-                type="button" role="tab" aria-controls="profile" aria-selected="false">Installed Plugins</button>
-        </li>
-        <li class="mr-2" role="presentation">
-            <button
-                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard"
-                aria-selected="false">Deactivated Plugins</button>
-        </li>
-        <li class="mr-2" role="presentation">
-            <button
-                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings"
-                aria-selected="false">Available to Install</button>
-        </li>
-        <li role="presentation">
-            <button
-                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts"
-                aria-selected="false">Upload Plugin</button>
-        </li>
-    </ul>
-</div>
-<div id="myTabContent">
-    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel"
-        aria-labelledby="profile-tab">
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
+            type="button" role="tab" aria-controls="pills-home" aria-selected="true">Installed Plugins</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
+            type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Deactivated Plugins</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
+            type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Available to Install</button>
+    </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+        tabindex="0">
+        {% if activePlugins is empty %}
+        <div class="alert alert-success" role="alert">
+            No plugins are currently installed.
+          </div>
+          {% endif %}
 
         {% for plugin in activePlugins %}
 
-        <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <div class="flex items-center justify-between px-4 pt-4">
-                <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">{{plugin.name}}
-                    <span
-                        class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">{{plugin.version}}</span>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{plugin.name}}
+                    <span class="badge rounded-pill text-bg-primary">{{plugin.version}}</span>
                 </h5>
-                <span
-                    class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Purusothaman
-                    Ramanujam</span>
+                <p class="card-text">{{plugin.description}}</p>
             </div>
-            
-            <div class="flex flex-col items-left px-4 pt-4">
-                <span class="text-sm pb-4 text-gray-500 dark:text-gray-400">{{plugin.description}}</span>
-                <div class="flex space-x-3">
-                    {# <button type="button" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Settings</button> #}
-                    <a href="{{full_url_for(plugin.settingsRouteName)}}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Settings</a>
+            <div class="card-footer text-muted">
 
-                    <button type="button" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-5 py-2.5 text-center mr-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Deactivate</button>
-
-                    <button type="button"
-                        class="text-xs text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                        Uninstall
-                    </button>
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group me-2" role="group" aria-label="First group">
+                        <a href="{{url_for(plugin.settingsRouteName)}}" class="btn btn-primary btn-sm">Settings</a>
+                    </div>
+                    <div class="btn-group me-2" role="group" aria-label="Third group">
+                        <a href="{{url_for('admin.plugin.deactivate' , {'key' : plugin.key})}}" class="btn btn-outline-secondary btn-sm">Deactivate</a>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Second group">
+                        <a href="{{url_for('admin.plugin.uninstall' , {'key' : plugin.key})}}" class="btn btn-outline-danger btn-sm">Uninstall</a>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel"
-        aria-labelledby="dashboard-tab">
-        <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong
-                class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated content</strong>. Clicking
-            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control
-            the content visibility and styling.</p>
+    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+
+        {% if inactivePlugins is empty %}
+        <div class="alert alert-success" role="alert">
+            No deactivated plugins.
+          </div>
+          {% endif %}
+
+        {% for plugin in inactivePlugins %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{plugin.name}}
+                    <span class="badge rounded-pill text-bg-primary">{{plugin.version}}</span>
+                </h5>
+                <p class="card-text">{{plugin.description}}</p>
+            </div>
+            <div class="card-footer text-muted">
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group me-2" role="group" aria-label="Second group">
+                        <a  href="{{url_for('admin.plugin.activate' , {'key' : plugin.key})}}" class="btn btn-outline-secondary btn-sm">Activate</a>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Third group">
+                        <a  href="{{url_for('admin.plugin.uninstall' , {'key' : plugin.key})}}" class="btn btn-outline-danger btn-sm">Uninstall</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel"
-        aria-labelledby="settings-tab">
-        <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong
-                class="font-medium text-gray-800 dark:text-white">Settings tab's associated content</strong>. Clicking
-            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control
-            the content visibility and styling.</p>
-    </div>
-    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel"
-        aria-labelledby="contacts-tab">
-        <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong
-                class="font-medium text-gray-800 dark:text-white">Contacts tab's associated content</strong>. Clicking
-            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control
-            the content visibility and styling.</p>
+    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+        {% if availablePlugins is empty %}
+        <div class="alert alert-success" role="alert">
+            No plugins to install.
+          </div>
+          {% endif %}
+
+        {% for plugin in availablePlugins %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{plugin.name}}
+                    <span class="badge rounded-pill text-bg-primary">{{plugin.version}}</span>
+                </h5>
+                <p class="card-text">{{plugin.description}}</p>
+            </div>
+            <div class="card-footer text-muted">
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group me-2" role="group" aria-label="Second group">
+                        <a href="{{url_for('admin.plugin.install' , {'key' : plugin.key})}}" class="btn btn-outline-primary btn-sm">Install</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
-
-
 {% endblock %}

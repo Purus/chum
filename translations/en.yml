@@ -11,4 +11,5 @@ admin:
       plugins: Plugins  
       themes: Themes  
       general: General  
-      menus: Menus  
+      menus: Menus
+      mail: Email

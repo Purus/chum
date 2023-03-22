@@ -1,8 +1,10 @@
 <?php
 namespace Chum\Core;
 
+use Chum\ChumFiles;
 use Chum\Core\Models\Plugin;
 use Chum\Core\PluginRepository;
+use Symfony\Component\Yaml\Yaml;
 
 class PluginService
 {
@@ -18,6 +20,12 @@ class PluginService
     private $pluginListCache;
 
     private static $classInstance;
+
+    const SCRIPT_INIT = "init.php";
+    const SCRIPT_INSTALL = "install.php";
+    const SCRIPT_UNINSTALL = "uninstall.php";
+    const SCRIPT_ACTIVATE = "activate.php";
+    const SCRIPT_DEACTIVATE = "deactivate.php";
 
     public static function getInstance()
     {
@@ -52,7 +60,7 @@ class PluginService
 
         /* @var $plugin Plugin */
         foreach ($dbData as $plugin) {
-            $this->pluginListCache[$plugin->getKey()] = $plugin;
+            $this->pluginListCache[strtolower($plugin->key)] = $plugin;
         }
     }
 
@@ -79,7 +87,7 @@ class PluginService
         /* @var $plugin Plugin */
         foreach ($pluginList as $plugin) {
 
-            if ($plugin->isActive()) {
+            if ($plugin->isActive) {
                 $activePlugins[] = $plugin;
             }
         }
@@ -94,7 +102,7 @@ class PluginService
         /* @var $plugin Plugin */
         foreach ($pluginList as $plugin) {
 
-            if (!$plugin->isActive()) {
+            if (!$plugin->isActive) {
                 $inactivePlugins[] = $plugin;
             }
         }
@@ -103,10 +111,37 @@ class PluginService
     }
     public function findAvailablePlugins()
     {
-        $inactivePlugins = array();
+        $availPlugins = array();
+        $dbPluginsArray = array_keys($this->getPluginListCache());
 
-        //TODO
-        return $inactivePlugins;
+        $listing = ChumFiles::getInstance()->getFiles("plugins");
+
+        foreach ($listing as $item) {
+            $path = $item->path();
+
+            if ($item instanceof \League\Flysystem\DirectoryAttributes) {
+                $filename = $path . DS . "chum-plugin.yml";
+
+                if (file_exists($filename)) {
+                    $values = Yaml::parseFile($filename);
+                    $plugin = new Plugin();
+
+                    $plugin->version = $values['version'];
+                    $plugin->key = $values['key'];
+                    $plugin->id = '0';
+                    $plugin->name = $values['name'];
+                    $plugin->description = $values['description'];
+                    $plugin->settingsRouteName = $values['settingsRouteName'];
+                    $plugin->devName = $values['developer']['name'];
+
+                    if (!in_array(strtolower($values['key']), $dbPluginsArray)) {
+                        $availPlugins[] = $plugin;
+                    }
+                }
+            }
+        }
+
+        return $availPlugins;
     }
 
     /**
@@ -125,6 +160,65 @@ class PluginService
         }
 
         return $pluginList[$key];
+    }
+
+    public function install($key)
+    {
+        $availablePlugins = array();
+
+        foreach ($this->findAvailablePlugins() as $plugin) {
+            $availablePlugins[strtolower($plugin->key)] = $plugin;
+        }
+
+        if (empty($key) || !array_key_exists(strtolower($key), $availablePlugins)) {
+            throw new \LogicException("Invalid plugin key - `{$key}` provided for install!");
+        }
+
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_INSTALL);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_ACTIVATE);
+
+        $plugin = $availablePlugins[$key];
+        $plugin->isActive = 1;
+
+        $this->savePlugin($availablePlugins[$key]);
+    }
+
+    public function activate($pluginKey)
+    {
+        if (empty($pluginKey)) {
+            throw new \LogicException("Empty plugin key provided for uninstall");
+        }
+
+        $plugin = $this->findPluginByKey(trim($pluginKey));
+
+        if ($plugin === null) {
+            throw new \LogicException("Invalid plugin key - `{$pluginKey}` provided to activate");
+        }
+
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_ACTIVATE);
+
+        $plugin->isActive = 1;
+
+        $this->savePlugin($plugin);
+    }
+
+    public function deactivate($pluginKey)
+    {
+        if (empty($pluginKey)) {
+            throw new \LogicException("Empty plugin key provided for uninstall");
+        }
+
+        $plugin = $this->findPluginByKey(trim($pluginKey));
+
+        if ($plugin === null) {
+            throw new \LogicException("Invalid plugin key - `{$pluginKey}` provided to activate");
+        }
+
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_DEACTIVATE);
+
+        $plugin->isActive = 0;
+
+        $this->savePlugin($plugin);
     }
 
     public function uninstall($pluginKey)
@@ -147,21 +241,21 @@ class PluginService
             )
         ); */
 
-        $this->includeScript($plugin->getRootDir() . BOL_PluginService::SCRIPT_DEACTIVATE);
-        $this->includeScript($plugin->getRootDir() . BOL_PluginService::SCRIPT_UNINSTALL);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_DEACTIVATE);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_UNINSTALL);
 
         // delete plugin work dirs
-        $dirsToRemove = array(
-            $plugin->getPluginFilesDir(),
-            $plugin->getUserFilesDir(),
-            $plugin->getPublicStaticDir()
-        );
+        // $dirsToRemove = array(
+        //     $plugin->getPluginFilesDir(),
+        //     $plugin->getUserFilesDir(),
+        //     $plugin->getPublicStaticDir()
+        // );
 
-        foreach ($dirsToRemove as $dir) {
-            if (file_exists($dir)) {
-                UTIL_File::removeDir($dir);
-            }
-        }
+        // foreach ($dirsToRemove as $dir) {
+        //     if (file_exists($dir)) {
+        //         UTIL_File::removeDir($dir);
+        //     }
+        // }
 
         // remove plugin configs
         // OW::getConfig()->deletePluginConfigs($pluginDto->getKey());
@@ -170,7 +264,7 @@ class PluginService
         // BOL_AuthorizationService::getInstance()->deleteGroup($pluginDto->getKey());
 
         //remove entry in DB
-        $this->deletePluginById($plugin->getId());
+        $this->deletePluginById($plugin->id);
 
         // trigger event
         // OW::getEventManager()->trigger(
@@ -181,9 +275,22 @@ class PluginService
         // );
     }
 
+    public function savePlugin(Plugin $plugin)
+    {
+        $this->pluginDao->save($plugin);
+        $this->updatePluginListCache();
+    }
+
     public function deletePluginById($id)
     {
         $this->pluginDao->deleteById($id);
         $this->updatePluginListCache();
+    }
+
+    public function includeScript($scriptPath)
+    {
+        if (file_exists($scriptPath)) {
+            include_once $scriptPath;
+        }
     }
 }

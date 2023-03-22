@@ -2,22 +2,14 @@
 
 namespace Chum\Core;
 
-use League\Flysystem\Filesystem;
-use Odan\Session\SessionInterface;
-use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteParserInterface;
-use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -28,9 +20,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 abstract class BaseController
 {
     protected Twig $twig;
-    protected LoggerInterface $logger;
     protected MailerInterface $mailer;
-    protected Filesystem $filesystem;
     protected Translator $translator;
     // protected SessionInterface $session;
     protected Session $session;
@@ -41,17 +31,14 @@ abstract class BaseController
     protected string $title = "";
 
     public function __construct(
-        Twig $twig, EventDispatcher $events, RouteParserInterface $routeParser, FormFactoryInterface $form, Translator $translator, LoggerInterface $logger, MailerInterface $mailer,
+        Twig $twig, EventDispatcher $events, RouteParserInterface $routeParser, FormFactoryInterface $form, Translator $translator, MailerInterface $mailer,
         // SessionInterface $session, 
         Session $session,
-        Filesystem $filesystem
     )
     {
         $this->events = $events;
         $this->twig = $twig;
-        $this->logger = $logger;
         $this->mailer = $mailer;
-        $this->filesystem = $filesystem;
         $this->translator = $translator;
         $this->session = $session;
         $this->form = $form;
@@ -112,7 +99,7 @@ abstract class BaseController
         $this->title = $title;
     }
 
-    protected function render(ServerRequestInterface $request, ResponseInterface $response, string $templateName, array $data): ResponseInterface
+    protected function render(ServerRequestInterface $request, ResponseInterface $response, string $templateName, array $data = array()): ResponseInterface
     {
         $response = $response->withoutHeader('Server');
         $response = $response->withAddedHeader('X-Powered-By', 'ChumChum');
@@ -133,10 +120,5 @@ abstract class BaseController
     public function sendEmail(Email $email): void
     {
         $this->mailer->send($email);
-    }
-
-    public function getFileSystem(): Filesystem
-    {
-        return $this->filesystem;
     }
 }

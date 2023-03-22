@@ -22,11 +22,9 @@ $twig = $app->getContainer()->get(Slim\Views\Twig::class);
 $plugins = PluginService::getInstance()->findActivePlugins();
 
 foreach ($plugins as $plugin) {
-    $pluginDir = CHUM_PLUGIN_ROOT . DS . $plugin->getKey() . DS;
+    $pluginDir = CHUM_PLUGIN_ROOT . DS . $plugin->key . DS;
 
-    if (file_exists($pluginDir . 'init.php')) {
-        include_once $pluginDir . 'init.php';
-    }
+    PluginService::getInstance()->includeScript($pluginDir . PluginService::SCRIPT_INIT);
 
     if (file_exists($pluginDir . 'routes.php')) {
         $routes = require $pluginDir . 'routes.php';
@@ -48,7 +46,7 @@ foreach ($plugins as $plugin) {
     }
 
     if (is_dir($pluginDir . 'template')) {
-        $twig->getLoader()->addPath($pluginDir . 'template', $plugin->getKey());
+        $twig->getLoader()->addPath($pluginDir . 'template', strtolower($plugin->key));
     }
 }
 

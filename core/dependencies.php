@@ -2,30 +2,23 @@
 
 declare(strict_types=1);
 
-use Monolog\Level;
-use Monolog\Logger;
 use Slim\Views\Twig;
 use DI\ContainerBuilder;
-use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use League\Flysystem\Filesystem;
 use Symfony\Component\Form\Forms;
 use Slim\Middleware\ErrorMiddleware;
 use Symfony\Component\Mailer\Mailer;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Mailer\Transport;
-use Monolog\Handler\RotatingFileHandler;
 use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Validator\Validation;
 use Twig\RuntimeLoader\FactoryRuntimeLoader;
-use Monolog\Processor\IntrospectionProcessor;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\Form\FormFactoryInterface;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
@@ -77,17 +70,6 @@ return function (ContainerBuilder $containerBuilder) {
 
         }
         ,
-        LoggerInterface::class => function (ContainerInterface $c): Logger {
-            $logger = new Logger('ChumChum');
-
-            $logger->pushProcessor(new IntrospectionProcessor());
-
-            $handler = new RotatingFileHandler('logs' . DS . 'logs.log', 5, Level::Error);
-            $logger->pushHandler($handler);
-
-            return $logger;
-        }
-        ,
         Connection::class => function (ContainerInterface $container): Connection {
             $config = new \Doctrine\DBAL\Configuration();
             $connectionParams = array(
@@ -129,12 +111,6 @@ return function (ContainerBuilder $containerBuilder) {
             );
 
             return new Mailer(Transport::fromDsn($dsn));
-        }
-        ,
-        Filesystem::class => function (ContainerInterface $container) {
-            $adapter = new LocalFilesystemAdapter(CHUM_DIR_ROOT);
-
-            return new Filesystem($adapter);
         }
         ,
         Translator::class => function (ContainerInterface $c): Translator {

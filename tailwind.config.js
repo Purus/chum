@@ -1,15 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./**/*.{html,js,twig}"],
-  theme: {
-    extend: {},
-  },
+  content: ["./**/*.{html,js,twig}","./node_modules/tw-elements/dist/js/**/*.js"],
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'), 
-    require('daisyui'),
-  ],
-  daisyui: {
-    themes: ["light", "dark"],
-  },
+    require("tw-elements/dist/plugin"),
+    // require('@tailwindcss/forms'),
+    // require('@tailwindcss/typography')
+  ]
 }
