@@ -19,11 +19,14 @@ echo $event->getMenu();
 $lang = $app->getContainer()->get(Symfony\Component\Translation\Translator::class);
 $twig = $app->getContainer()->get(Slim\Views\Twig::class);
 
+if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && CHUM_DB_INSTALLED != '1')) {
+    $app->redirect("/",'/install');
+}
+
 $plugins = PluginService::getInstance()->findActivePlugins();
 
 foreach ($plugins as $plugin) {
-    $pluginDir = CHUM_PLUGIN_ROOT . DS . $plugin->key . DS;
-
+    $pluginDir = $plugin->getRootDir();
     PluginService::getInstance()->includeScript($pluginDir . PluginService::SCRIPT_INIT);
 
     if (file_exists($pluginDir . 'routes.php')) {

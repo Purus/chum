@@ -22,6 +22,11 @@ https://www.joyk.com/dig/detail/1608040736234854 - query transaction
 # Commands
 
 ```
+docker build -t chum:latest .
+docker run -d -p 80:80 chum:latest
+```
+
+```
 npx tailwindcss -i ./input.css -o ./assets/css/output.css
 ```
 

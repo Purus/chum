@@ -22,6 +22,15 @@ $app = AppFactory::create();
 
 require CHUM_DIR_ROOT . DS . 'core' . DS . 'middleware.php';
 require CHUM_DIR_ROOT . DS . 'core' . DS . 'routes.php';
+
+// if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && CHUM_DB_INSTALLED != '1')) {
+//     $app->redirect("home",'install');
+// }
+
 require CHUM_DIR_ROOT . DS . 'core' . DS . 'bootstrap.php';
 
 $app->run();
+
+// if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && CHUM_DB_INSTALLED != '1')) {
+//     $app->redirect("/",'/install/welcome');
+// }
