@@ -72,8 +72,8 @@ class AdminController extends BaseController
 
     public function menus(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $this->setPageTitle("Menu Configurations");
+        $this->setPageTitle("Menu Settings");
 
-        return $this->render($request, $response, 'admin/admin.menu.twig', array());
+        return $this->render($request, $response, 'admin/admin.menus.twig', array());
     }
 }
