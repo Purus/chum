@@ -1,5 +1,51 @@
 {% extends 'admin/admin.base.layout.twig' %}
 
 {% block content %}
-themes
+
+<ul class="mb-4 flex list-none flex-col flex-wrap border-b-0 pl-0 md:flex-row" role="tablist" data-te-nav-ref>
+    <li role="presentation">
+        <a href="#tabs-home"
+            class="my-2 block border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 text-xs font-medium uppercase leading-tight text-[#4b5563] hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[te-nav-active]:border-[#2563eb] data-[te-nav-active]:!text-[#2563eb] dark:text-neutral-200 dark:hover:bg-transparent"
+            data-te-toggle="pill" data-te-target="#tabs-home" data-te-nav-active role="tab" aria-controls="tabs-home"
+            aria-selected="true">Current Theme</a>
+    </li>
+    <li role="presentation">
+        <a href="#tabs-messages"
+            class="my-2 block border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 text-xs font-medium uppercase leading-tight text-[#4b5563] hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[te-nav-active]:border-[#2563eb] data-[te-nav-active]:!text-[#2563eb] dark:text-neutral-200 dark:hover:bg-transparent"
+            data-te-toggle="pill" data-te-target="#tabs-messages" role="tab" aria-controls="tabs-messages"
+            aria-selected="false">Available Themes</a>
+    </li>
+</ul>
+<div>
+    <div class="hidden opacity-0 opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
+        id="tabs-home" role="tabpanel" aria-labelledby="tabs-home-tab" data-te-tab-active>
+      
+    </div>
+
+    <div class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
+        id="tabs-messages" role="tabpanel" aria-labelledby="tabs-profile-tab">
+        {% if availableThemes is empty %}
+        <div class="mb-4 rounded-lg bg-primary-100 py-5 px-6 text-base text-primary-600" role="alert">
+            No themes available to install.
+        </div>
+        {% endif %}
+
+        {% for theme in availableThemes %}
+        <div class="w-full">
+            <div class="block rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-700">
+                <h5 class="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">{{theme.name}}
+                    <span
+                        class="inline-block whitespace-nowrap rounded-[0.27rem] bg-primary-100 px-[0.65em] pt-[0.35em] pb-[0.25em] text-center align-baseline text-[0.75em] font-bold leading-none text-primary-700">{{theme.version}}</span>
+                </h5>
+                <p class="mb-4 text-base text-neutral-600 dark:text-neutral-200">{{theme.description}}</p>
+                <a class="button inline-block rounded bg-primary px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
+                    data-te-ripple-init href="{{url_for('admin.theme.install' , {'key' : theme.key})}}"
+                    data-te-ripple-color="light">
+                    Install
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
