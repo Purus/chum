@@ -63,13 +63,6 @@ class AdminController extends BaseController
         return $this->render($request, $response, 'admin/admin.users.twig', array());
     }
 
-    public function themes(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $this->setPageTitle("Themes");
-
-        return $this->render($request, $response, 'admin/admin.themes.twig', array('availableThemes' => array()));
-    }
-
     public function menus(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $this->setPageTitle("Menu Settings");

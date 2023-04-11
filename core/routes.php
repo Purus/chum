@@ -6,6 +6,7 @@ use \Chum\Core\Controllers\TestController;
 use \Chum\Core\Controllers\AdminController;
 use \Chum\Core\Controllers\InstallController;
 use \Chum\Core\Controllers\PluginController;
+use \Chum\Core\Controllers\ThemesController;
 
 $app->get('/email', [TestController::class, 'testEmail'])->setName("email");
 $app->map(['GET', 'POST'], '/install/welcome', [InstallController::class, 'index'])->setName("install");
@@ -23,4 +24,6 @@ $app->get('/admin/plugins/install/{key}', [PluginController::class, 'install'])-
 $app->get('/admin/plugins/activate/{key}', [PluginController::class, 'activate'])->setName("admin.plugin.activate");
 $app->get('/admin/plugins/deactivate/{key}', [PluginController::class, 'deactivate'])->setName("admin.plugin.deactivate");
 $app->get('/admin/plugins/uninstall/{key}', [PluginController::class, 'uninstall'])->setName("admin.plugin.uninstall");
-$app->get('/admin/themes', [AdminController::class, 'themes'])->setName("admin.themes");
+$app->get('/admin/themes', [ThemesController::class, 'themes'])->setName("admin.themes");
+$app->get('/admin/themes/activate/{key}', [ThemesController::class, 'activate'])->setName("admin.themes.activate");
+$app->get('/admin/themes/deactivate/{key}', [ThemesController::class, 'deactivate'])->setName("admin.themes.deactivate");

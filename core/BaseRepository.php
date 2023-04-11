@@ -3,8 +3,6 @@
 namespace Chum\Core;
 
 use Chum\ChumDb;
-use Doctrine\DBAL\Connection;
-use stdClass;
 
 abstract class BaseRepository
 {
@@ -20,7 +18,7 @@ abstract class BaseRepository
     public function findAll(): array
     {
         return $this->db->queryForObjects("SELECT * FROM " . $this->getTableName() . " ;", $this->getModel());
-    }
+    }    
 
     public function save( $entity )
     {

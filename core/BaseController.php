@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Intl\Scripts;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Translation\Translator;
@@ -29,13 +30,13 @@ abstract class BaseController
     protected EventDispatcher $events;
 
     protected string $title = "";
+    protected $scripts = array();
+    protected $styles = array();
 
     public function __construct(
-        Twig $twig, EventDispatcher $events, RouteParserInterface $routeParser, FormFactoryInterface $form, Translator $translator, MailerInterface $mailer,
-        // SessionInterface $session, 
-        Session $session,
-    )
-    {
+        Twig $twig, EventDispatcher $events, RouteParserInterface $routeParser, FormFactoryInterface $form,
+        Translator $translator, MailerInterface $mailer, Session $session,
+    ) {
         $this->events = $events;
         $this->twig = $twig;
         $this->mailer = $mailer;
@@ -98,6 +99,14 @@ abstract class BaseController
     {
         $this->title = $title;
     }
+    protected function addScript(string $url)
+    {
+        $this->scripts[] = $url;
+    }
+    protected function addStyle(string $url)
+    {
+        $this->styles[] = $url;
+    }
 
     protected function render(ServerRequestInterface $request, ResponseInterface $response, string $templateName, array $data = array()): ResponseInterface
     {
@@ -114,7 +123,16 @@ abstract class BaseController
                 $response = $response->withAddedHeader('Strict-Transport-Security', 'max-age=63072000');
             }
         }
-        return $this->twig->render($response, $templateName, array_merge(array("title" => $this->title), $data));
+
+        $this->addStyle("/themes/chum-chum/css/output.css");
+        $this->addStyle("/themes/chum-chum/css/icons.css");
+        $this->addStyle("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap");
+
+        $renderData = array_merge(array("title" => $this->title), $data);
+        $renderData['scripts'] = $this->scripts;
+        $renderData['styles'] = $this->styles;
+
+        return $this->twig->render($response, $templateName, $renderData);
     }
 
     public function sendEmail(Email $email): void
