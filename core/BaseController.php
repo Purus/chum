@@ -2,6 +2,7 @@
 
 namespace Chum\Core;
 
+use DebugBar\StandardDebugBar;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteParserInterface;

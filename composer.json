@@ -23,17 +23,16 @@
     "symfony/translation": "^6.2",
     "symfony/yaml": "^6.2",
     "symfony/twig-bridge": "^6.2",
-    "doctrine/dbal": "^3.6",
     "symfony/form": "^6.2",
     "symfony/security-csrf": "^6.2",
     "symfony/http-foundation": "^6.2",
     "symfony/validator": "^6.2",
     "symfony/psr-http-message-bridge": "^2.1",
     "symfony/intl": "^6.2",
-    "aura/sql": "^5.0.1",
     "nyholm/psr7": "^1.5",
     "symfony/event-dispatcher": "^6.2",
-    "filp/whoops": "^2.15"
+    "filp/whoops": "^2.15",
+    "cakephp/database": "^4.4"
   },
   "require-dev": {
     "symfony/var-dumper": "^6.2",

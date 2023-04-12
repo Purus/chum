@@ -2,23 +2,44 @@
 
 namespace Chum;
 
-use Aura\Sql\ExtendedPdo;
+use Cake\Database\Connection;
 use PDO;
+use Cake\Database\Query;
 
 final class ChumDb
 {
-    private ExtendedPdo $pdo;
+    private Connection $connection;
     protected static $instance;
 
     public function __construct()
     {
-        $this->pdo = new ExtendedPdo(
-            'mysql:host=' . CHUM_DB_HOST . ';dbname=' . CHUM_DB_NAME,
-            CHUM_DB_USER,
-            CHUM_DB_PASSWORD,
-            [],
-            // driver attributes/options as key-value pairs
-            [] // queries to execute after connection
+        $this->connection = new Connection(
+            array(
+                'driver' => \Cake\Database\Driver\Mysql::class,
+                'host' => CHUM_DB_HOST,
+                'database' => CHUM_DB_NAME,
+                'username' => CHUM_DB_USER,
+                'password' => CHUM_DB_PASSWORD,
+                'encoding' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                // Enable identifier quoting
+                'quoteIdentifiers' => true,
+                // Set to null to use MySQL servers timezone
+                'timezone' => null,
+                // PDO options
+                'flags' => [
+                        // Turn off persistent connections
+                    PDO::ATTR_PERSISTENT => false,
+                        // Enable exceptions
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        // Emulate prepared statements
+                    PDO::ATTR_EMULATE_PREPARES => true,
+                        // Set default fetch mode to array
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        // Set character set
+                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
+                ],
+            )
         );
     }
 
@@ -30,112 +51,68 @@ final class ChumDb
         return self::$instance;
     }
 
-    public function queryForObjects(string $sql, $className, array $params = [])
-    {        
-        return $this->pdo->fetchObjects($sql, $params, $className);
-    }
-
-    public function run($sql, array $params = null)
+    public function pdo(): PDO
     {
-        $stmt = $this->pdo->prepare($sql);
-
-        if ($params !== null) {
-            foreach ($params as $key => $value) {
-                $paramType = PDO::PARAM_STR;
-                if (is_int($value))
-                    $paramType = PDO::PARAM_INT;
-                elseif (is_bool($value))
-                    $paramType = PDO::PARAM_BOOL;
-
-                $stmt->bindValue(is_int($key) ? $key + 1 : $key, $value, $paramType);
-            }
-        }
-        $stmt->execute();
-
-        return $stmt;
+        return $this->connection->getDriver()->getConnection();
     }
 
-    public function insertObject( $tableName, $obj, $delayed = false )
+    public function newQuery(): Query
     {
-        if ( $obj != null && is_object($obj) )
-        {
-            $params = get_object_vars($obj);
-            $paramNames = array_keys($params);
-            $columns = $this->arrayToDelimitedString($paramNames, ',', '`', '`');
-            $values = $this->arrayToDelimitedString($paramNames, ',', ':');
-            $sql = "INSERT" . ($delayed ? " DELAYED" : "") . " INTO `{$tableName}` ({$columns}) VALUES ({$values})";
-            return $this->insert($sql, $params);
-        }
-        else
-        {
-            throw new \InvalidArgumentException('object expected');
-        }
+        return $this->connection->newQuery();
     }
 
-    public function updateObject( $tableName, $obj, $primaryKeyName = 'id', $lowPriority = false )
+    public function select(string $table): Query
     {
-        if ( $obj != null && is_object($obj) )
-        {
-            $params = get_object_vars($obj);
+        $query = $this->newQuery()->from($table);
 
-            if ( !array_key_exists($primaryKeyName, $params) )
-            {
-                throw new \InvalidArgumentException('object property not found');
-            }
-
-            $fieldsToUpdate = $obj->getEntinyUpdatedFields();
-
-            if ( empty($fieldsToUpdate) )
-            {
-                return true;
-            }
-
-            $updateArray = array();
-            foreach ( $params as $key => $value )
-            {
-                if ( $key !== $primaryKeyName )
-                {
-                    if ( in_array($key, $fieldsToUpdate) )
-                    {
-                        $updateArray[] = '`' . $key . '`=:' . $key;
-                    }
-                    else
-                    {
-                        unset($params[$key]);
-                    }
-                }
-            }
-
-            $updateStmt = $this->arrayToDelimitedString($updateArray);
-            $sql = "UPDATE" . ($lowPriority ? " LOW_PRIORITY" : "") . " `{$tableName}` SET {$updateStmt} WHERE {$primaryKeyName}=:{$primaryKeyName}";
-            return $this->run($sql, $params);
+        if (!$query instanceof Query) {
+            throw new \UnexpectedValueException('Failed to create query');
         }
-        else
-        {
-            throw new \InvalidArgumentException('object expected');
-        }
+
+        return $query;
     }
-    public function insert( $sql, array $params = null )
+
+    public function update(string $table, array $data): Query
     {
-        $stmt = $this->run($sql, $params);
-        $lastInsertId = $this->pdo->lastInsertId();
-        $stmt->closeCursor();
-        return $lastInsertId;
+        return $this->newQuery()->update($table)->set($data);
     }
 
-    public static function arrayToDelimitedString( array $array, $delimiter = ',', $left = '', $right = '' )
+    /**
+     * Create an 'update' statement for the given table.
+     *
+     * @param string $table The table to update rows from
+     * @param array $data The values to be updated
+     *
+     * @return Query The new insert query
+     */
+    public function insert(string $table, array $data): Query
     {
-        $result = '';
-        foreach ( $array as $value )
-        {
-            $result .= ( $left . $value . $right . $delimiter);
-        }
-        $length = mb_strlen($result);
-        if ( $length > 0 )
-        {
-            $result = mb_substr($result, 0, $length - 1);
-        }
-        return $result;
+        return $this->newQuery()
+            ->insert(array_keys($data))
+            ->into($table)
+            ->values($data);
     }
 
+    /**
+     * Create a 'delete' query for the given table.
+     *
+     * @param string $table The table to delete from
+     *
+     * @return Query A new delete query
+     */
+    public function delete(string $table): Query
+    {
+        return $this->newQuery()->delete($table);
+    }  
+    
+    /**
+     * Run a sql query.
+     *
+     * @param string $sql The sql to run
+     *
+     */
+    public function run(string $sql)
+    {
+        $this->newQuery()->getConnection()->execute($sql);
+    }
 }

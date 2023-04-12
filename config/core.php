@@ -1,6 +1,6 @@
 <?php
 
-define('DS', DIRECTORY_SEPARATOR);
+// define('DS', DIRECTORY_SEPARATOR);
 
 define('CHUM_DIR_ROOT', substr(dirname(__FILE__), 0, -strlen('config')));
 define('CHUM_PLUGIN_ROOT', CHUM_DIR_ROOT . DS . 'plugins');

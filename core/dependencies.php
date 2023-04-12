@@ -26,6 +26,9 @@ use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Security\Csrf\TokenGenerator\UriSafeTokenGenerator;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
+use DebugBar\StandardDebugBar;
+use DebugBar\Bridge\NamespacedTwigProfileCollector;
+use DebugBar\Bridge\Twig\TimeableTwigExtensionProfiler;
 
 return function (ContainerBuilder $containerBuilder) {
 
@@ -65,6 +68,13 @@ return function (ContainerBuilder $containerBuilder) {
             ]));
 
             $twig->addExtension(new FormExtension());
+            $twig->addExtension(new \Twig\Extension\DebugExtension());
+
+            // $debugbar = new StandardDebugBar();
+            // $profile = new \Twig\Profiler\Profile();
+            // $debugbar->addCollector(new NamespacedTwigProfileCollector($profile));
+
+            // $twig->addExtension(new TimeableTwigExtensionProfiler($profile, $debugbar['time']));
 
             return $twig;
 

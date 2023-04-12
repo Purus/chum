@@ -26,7 +26,7 @@ if (!defined('CHUM_DB_INSTALLED') || (defined('CHUM_DB_INSTALLED') && CHUM_DB_IN
 $plugins = PluginService::getInstance()->findActivePlugins();
 
 foreach ($plugins as $plugin) {
-    $pluginDir = $plugin->getRootDir();
+    $pluginDir = CHUM_PLUGIN_ROOT . DS. strtolower($plugin['key']) . DS;
     PluginService::getInstance()->includeScript($pluginDir . PluginService::SCRIPT_INIT);
 
     if (file_exists($pluginDir . 'routes.php')) {
@@ -49,7 +49,7 @@ foreach ($plugins as $plugin) {
     }
 
     if (is_dir($pluginDir . 'template')) {
-        $twig->getLoader()->addPath($pluginDir . 'template', strtolower($plugin->key));
+        $twig->getLoader()->addPath($pluginDir . 'template', strtolower($plugin['key']));
     }
 }
 

@@ -8,10 +8,10 @@ class Entity
      */
     public $id;
 
-    /**
-     * @var array
-     */
-    protected $_fieldsHash;
+    // /**
+    //  * @var array
+    //  */
+    // protected $_fieldsHash;
 
     /**
      * @return int
@@ -31,7 +31,7 @@ class Entity
         return $this;
     }
 
-    public function generateFieldsHash()
+/*     public function generateFieldsHash()
     {
         $this->_fieldsHash = array();
         $vars = get_object_vars($this);
@@ -59,5 +59,5 @@ class Entity
         }
         
         return $updatedFields;
-    }
+    } */
 }

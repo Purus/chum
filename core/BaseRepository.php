@@ -3,12 +3,14 @@
 namespace Chum\Core;
 
 use Chum\ChumDb;
+use Chum\Core\Models\Entity;
+use PDO;
 
 abstract class BaseRepository
 {
     public abstract function getTableName(): string;
     public abstract function getModel(): string;
-    protected $db;
+    protected ChumDb $db;
 
     public function __construct()
     {
@@ -17,26 +19,21 @@ abstract class BaseRepository
 
     public function findAll(): array
     {
-        return $this->db->queryForObjects("SELECT * FROM " . $this->getTableName() . " ;", $this->getModel());
-    }    
+        return $this->db->select($this->getTableName())->select("*")->execute()->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    public function save( $entity )
+    public function save(array $entity)
     {
-        if ( $entity === null)
-        {
+        if ($entity === null || empty(($entity))) {
             throw new \InvalidArgumentException('Argument must be instance of Entity and cannot be null');
         }
 
-        $entity->id = (int) $entity->id;
+        $entityId = $entity['id'] ?? 0;
 
-        if ( $entity->id > 0 )
-        {
-            $this->db->updateObject($this->getTableName(), $entity);
-        }
-        else
-        {
-            // $entity->setId (NULL);
-            $entity->id =  $this->db->insertObject($this->getTableName(), $entity);
+        if ($entityId > 0) {
+            $this->db->update($this->getTableName(), $entity)->execute();
+        } else {
+            $this->db->insert($this->getTableName(), $entity)->execute();
         }
     }
 
@@ -44,8 +41,23 @@ abstract class BaseRepository
     {
         $id = (int) $id;
         if ($id > 0) {
-            $sql = 'DELETE FROM ' . $this->getTableName() . ' WHERE `id` = ?';
-            $result = $this->db->run($sql, array($id));
+            $this->db->delete($this->getTableName())->andWhere(["id" => $id])->execute();
         }
+    }
+
+    public static function toObject(array $array, $object)
+    {
+        $class = get_class($object);
+        $methods = get_class_methods($class);
+        foreach ($methods as $method) {
+            preg_match(' /^(set)(.*?)$/i', $method, $results);
+            $pre = $results[1] ?? '';
+            $k = $results[2] ?? '';
+            $k = strtolower(substr($k, 0, 1)) . substr($k, 1);
+            if ($pre == 'set' && !empty($array[$k])) {
+                $object->$method($array[$k]);
+            }
+        }
+        return $object;
     }
 }
