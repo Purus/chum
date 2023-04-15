@@ -15,9 +15,8 @@ class ThemesController extends BaseController
 
     public function themes(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $currentTheme = ThemeService::getInstance()->findCurrentTheme();
-        $availableThemes = ThemeService::getInstance()->findAvailableThemes();
-        dump($availableThemes);
+        $currentTheme = ThemeService::getInstance()->getCurrentTheme();
+        $availableThemes = ThemeService::getInstance()->getAvailableThemes();
 
         $this->setPageTitle("Themes");
 
@@ -34,15 +33,6 @@ class ThemesController extends BaseController
         $themeKey = $args['key'];
 
         ThemeService::getInstance()->activate($themeKey);
-
-        return $this->redirectByName($response, "admin.themes");
-    }
-
-    public function deactivate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $themeKey = $args['key'];
-
-        ThemeService::getInstance()->deactivate($themeKey);
 
         return $this->redirectByName($response, "admin.themes");
     }

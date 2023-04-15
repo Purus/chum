@@ -26,4 +26,3 @@ $app->get('/admin/plugins/deactivate/{key}', [PluginController::class, 'deactiva
 $app->get('/admin/plugins/uninstall/{key}', [PluginController::class, 'uninstall'])->setName("admin.plugin.uninstall");
 $app->get('/admin/themes', [ThemesController::class, 'themes'])->setName("admin.themes");
 $app->get('/admin/themes/activate/{key}', [ThemesController::class, 'activate'])->setName("admin.themes.activate");
-$app->get('/admin/themes/deactivate/{key}', [ThemesController::class, 'deactivate'])->setName("admin.themes.deactivate");

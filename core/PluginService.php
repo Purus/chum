@@ -3,16 +3,10 @@ namespace Chum\Core;
 
 use Chum\ChumFiles;
 use Chum\Core\Models\Plugin;
-use Chum\Core\PluginRepository;
 use Symfony\Component\Yaml\Yaml;
 
 class PluginService
 {
-
-    /**
-     * @var PluginRepository
-     */
-    private $pluginDao;
 
     /**
      * @var array
@@ -41,7 +35,7 @@ class PluginService
      */
     private function __construct()
     {
-        $this->pluginDao = PluginRepository::getInstance();
+        // $this->pluginDao = PluginRepository::getInstance();
     }
 
     private function getPluginListCache()
@@ -56,10 +50,11 @@ class PluginService
     private function updatePluginListCache()
     {
         $this->pluginListCache = array();
-        $dbData = $this->pluginDao->findAll();
+        $dbData = Plugin::all();
 
+        /* @var $plugin Plugin */
         foreach ($dbData as $plugin) {
-            $this->pluginListCache[strtolower($plugin['key'])] = $plugin;
+            $this->pluginListCache[strtolower($plugin->key)] = $plugin;
         }
     }
 
@@ -123,21 +118,17 @@ class PluginService
 
                 if (file_exists($filename)) {
                     $values = Yaml::parseFile($filename);
-                    // $plugin = new Plugin();
+                    $plugin = new Plugin();
 
-                    // $plugin->version = $values['version'];
-                    // $plugin->key = $values['key'];
-                    // $plugin->id = '0';
-                    // $plugin->name = $values['name'];
-                    // $plugin->description = $values['description'];
-                    // $plugin->settingsRouteName = $values['settingsRouteName'];
-                    // $plugin->devName = $values['developer']['name'];
-                    $values['devName'] = $values['developer']['name'];
-                    unset($values['developer']);
-                    unset($values['tags']);
+                    $plugin->version = $values['version'];
+                    $plugin->key = $values['key'];
+                    $plugin->name = $values['name'];
+                    $plugin->description = $values['description'];
+                    $plugin->settingsRouteName = $values['settingsRouteName'];
+                    $plugin->devName = $values['developer']['name'];
 
                     if (!in_array(strtolower($values['key']), $dbPluginsArray)) {
-                        $availPlugins[] = $values;
+                        $availPlugins[] =  $plugin;
                     }
                 }
             }
@@ -150,15 +141,15 @@ class PluginService
      * Finds plugin item for provided key.
      *
      * @param string $key
-     * @return array
+     * @return Plugin|null
      */
-    public function findPluginByKey($key): array
+    public function findPluginByKey($key): Plugin|null
     {
         $key = strtolower($key);
         $pluginList = $this->getPluginListCache();
 
         if (!array_key_exists($key, $pluginList)) {
-            return array();
+            return null;
         }
 
         return $pluginList[$key];
@@ -176,18 +167,13 @@ class PluginService
             throw new \LogicException("Invalid plugin key - `{$key}` provided for install!");
         }
 
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_INSTALL);
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_ACTIVATE);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_INSTALL);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_ACTIVATE);
 
         $plugin = $availablePlugins[$key];
         $plugin['isActive'] = 1;
 
         $this->savePlugin($plugin);
-    }
-
-    public function getRootDir(string $key)
-    {
-        return CHUM_PLUGIN_ROOT . DS . strtolower($key) . DS;
     }
 
     public function activate($pluginKey)
@@ -202,8 +188,8 @@ class PluginService
             throw new \LogicException("Invalid plugin key - `{$pluginKey}` provided to activate");
         }
 
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_ACTIVATE);
-
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_ACTIVATE);
+ 
         $plugin['isActive'] = 1;
 
         $this->savePlugin($plugin);
@@ -221,7 +207,7 @@ class PluginService
             throw new \LogicException("Invalid plugin key - `{$pluginKey}` provided to activate");
         }
 
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_DEACTIVATE);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_DEACTIVATE);
 
         $plugin['isActive'] = 0;
 
@@ -248,8 +234,8 @@ class PluginService
             )
         ); */
 
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_DEACTIVATE);
-        $this->includeScript($this->getRootDir($plugin['key']) . PluginService::SCRIPT_UNINSTALL);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_DEACTIVATE);
+        $this->includeScript($plugin->getRootDir() . PluginService::SCRIPT_UNINSTALL);
 
         // delete plugin work dirs
         // $dirsToRemove = array(
@@ -282,15 +268,15 @@ class PluginService
         // );
     }
 
-    public function savePlugin(array $plugin)
+    public function savePlugin(Plugin $plugin)
     {
-        $this->pluginDao->save($plugin);
+        $plugin->save();
         $this->updatePluginListCache();
     }
 
     public function deletePluginById($id)
     {
-        $this->pluginDao->deleteById($id);
+        Plugin::query()->where('id', '=', $id)->delete();
         $this->updatePluginListCache();
     }
 

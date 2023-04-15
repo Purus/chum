@@ -125,8 +125,10 @@ abstract class BaseController
             }
         }
 
-        $this->addStyle("/themes/chum-chum/css/output.css");
-        $this->addStyle("/themes/chum-chum/css/icons.css");
+        $themeName = ThemeService::getInstance()->getCurrentThemeName();
+
+        $this->addStyle("/themes/$themeName/css/output.css");
+        $this->addStyle("/themes/$themeName/css/icons.css");
         $this->addStyle("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap");
 
         $renderData = array_merge(array("title" => $this->title), $data);

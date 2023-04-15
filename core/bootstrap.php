@@ -7,6 +7,26 @@ use Chum\Events\NewMainMenuEvent;
 use Chum\ChumEvent;
 use Chum\Events\MainMenuEventSubscriber;
 
+$manager = new Illuminate\Database\Capsule\Manager();
+
+$dbSettings = [
+    'driver' => 'mysql',
+    'host' => CHUM_DB_HOST,
+    'database' => CHUM_DB_NAME,
+    'username' => CHUM_DB_USER,
+    'password' => CHUM_DB_PASSWORD,
+    'charset' => 'utf8mb4',
+    'collation' => 'utf8mb4_unicode_ci',
+    'prefix' => CHUM_DB_PREFIX
+];
+
+$manager->addConnection($dbSettings);
+
+$manager->getConnection()->enableQueryLog();
+
+$manager->setAsGlobal();
+$manager->bootEloquent();
+
 $dispacter = ChumEvent::getInstance();
 
 $dispacter->addSubscriber(new MainMenuEventSubscriber());

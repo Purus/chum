@@ -1,0 +1,11 @@
+name: Chum Chum Max
+key: chum-chum-max
+description: Default theme for Chum
+version: 1.0.0
+developer:
+  id: 1
+  name: Chum Software
+  email: info@chum.software
+  url: https://chum.software
+tags:
+  - theme

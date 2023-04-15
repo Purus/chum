@@ -2,18 +2,12 @@
 namespace Chum\Core;
 
 use Chum\ChumFiles;
+use Chum\Core\Models\Config;
 use Chum\Core\Models\Theme;
-use Chum\Core\ThemeRepository;
 use Symfony\Component\Yaml\Yaml;
 
 class ThemeService
 {
-
-    /**
-     * @var ThemeRepository
-     */
-    private $themeDao;
-
     /**
      * @var array
      */
@@ -31,11 +25,14 @@ class ThemeService
     }
 
     /**
-     * Constructor.
+     * Returns currently active theme.
+     *
+     * @return string|null
      */
-    private function __construct()
+    public function getCurrentThemeName()
     {
-        $this->themeDao = ThemeRepository::getInstance();
+        $themConfig = ConfigService::getInstance()->findCoreByKey("current_theme");
+        return $themConfig['value'];
     }
 
     /**
@@ -43,16 +40,30 @@ class ThemeService
      *
      * @return Theme|null
      */
-    public function findCurrentTheme()
+    public function getCurrentTheme()
     {
-        $theme = $this->findThemeByKey("chum-chum");
+        $currentThemeName = $this->getCurrentThemeName();
+
+        if ($currentThemeName == null) {
+            return null;
+        }
+
+        $allThemes = $this->getAvailableThemes();
+
+        $theme = $allThemes[$currentThemeName];
+        if ($theme == null) {
+            return null;
+        }
+
+        $theme->isActive = 1;
 
         return $theme;
     }
 
-    public function findAvailableThemes()
+    public function getAvailableThemes()
     {
         $availThemes = array();
+        $currentThemeName = $this->getCurrentThemeName();
 
         $listing = ChumFiles::getInstance()->getFiles("themes");
 
@@ -68,23 +79,24 @@ class ThemeService
 
                     $theme->version = $values['version'];
                     $theme->key = $values['key'];
-                    $theme->id = '0';
                     $theme->customCss = '';
                     $theme->name = $values['name'];
                     $theme->description = $values['description'];
                     $theme->devName = $values['developer']['name'];
 
-                    // if ($this->findCurrentTheme() == $values['key']) {
+                    if ($currentThemeName == $values['key']) {
                         $theme->isActive = 1;
-                    // } else {
-                    //     $theme->isActive = 0;
-                    // }
+                    } else {
+                        $theme->isActive = 0;
+                    }
 
                     $availThemes[$values['key']] = $theme;
 
                 }
             }
         }
+
+        uasort($availThemes, fn(Theme $a, Theme $b): int => $b->isActive <=> $a->isActive);
 
         return $availThemes;
     }
@@ -98,8 +110,7 @@ class ThemeService
     public function findThemeByKey($key)
     {
         $key = strtolower($key);
-        $themesList = $this->findAvailableThemes();
-        dump($themesList);
+        $themesList = $this->getAvailableThemes();
 
         if (!array_key_exists($key, $themesList)) {
             return null;
@@ -111,47 +122,24 @@ class ThemeService
     public function activate($themeKey)
     {
         if (empty($themeKey)) {
-            throw new \LogicException("Empty plugin key provided for uninstall");
+            throw new \LogicException("Empty plugin key provided");
         }
 
-        $theme = $this->findThemeByKey(trim($themeKey));
+        $currentTheme = $this->getCurrentTheme();
+        $currentValues = $currentTheme->toArray();
+        $currentValues['isActive'] = 0;
+        Theme::updateOrCreate(['key' => $currentTheme['key']], $currentValues);
 
-        if ($theme === null) {
-            throw new \LogicException("Invalid theme key - `{$themeKey}` provided to activate");
+        $newTheme = $this->findThemeByKey($themeKey);
+
+        if ($newTheme == null) {
+            throw new \LogicException("theme with name - `{$themeKey['name']}` is invalid");
         }
+        $newValues = $newTheme->toArray();
+        $newValues['isActive'] = 1;
 
-        if($theme->isActive == 1){
-            throw new \LogicException("theme key - `{$themeKey}` already active");
-        }
+        Theme::updateOrCreate(['key' => $themeKey], $newValues);
 
-        $theme->isActive = 1;
-
-        $this->saveTheme($theme);
-    }
-
-    public function deactivate($themeKey)
-    {
-        if (empty($themeKey)) {
-            throw new \LogicException("Empty theme key provided for uninstall");
-        }
-
-        $theme = $this->findThemeByKey(trim($themeKey));
-
-        if ($theme === null) {
-            throw new \LogicException("Invalid theme key - `{$themeKey}` provided to activate");
-        }
-
-        if($theme->isActive == 0){
-            throw new \LogicException("theme key - `{$themeKey}` not active");
-        }
-
-        $theme->isActive = 0;
-
-        $this->saveTheme($theme);
-    }
-
-    public function saveTheme(Theme $theme)
-    {
-        $this->themeDao->save($theme);
+        ConfigService::getInstance()->update('base', 'current_theme', $newTheme['key']);
     }
 }

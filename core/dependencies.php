@@ -52,7 +52,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'debug' => true,
                 'form_themes' => 'form_div_layout.html.twig'
             ]);
-            
+
             $twig->getEnvironment()->addGlobal('locale', $translator->getLocale());
             $twig->addExtension(new TranslationExtension($translator));
 
@@ -68,46 +68,7 @@ return function (ContainerBuilder $containerBuilder) {
             ]));
 
             $twig->addExtension(new FormExtension());
-            $twig->addExtension(new \Twig\Extension\DebugExtension());
-
-            // $debugbar = new StandardDebugBar();
-            // $profile = new \Twig\Profiler\Profile();
-            // $debugbar->addCollector(new NamespacedTwigProfileCollector($profile));
-
-            // $twig->addExtension(new TimeableTwigExtensionProfiler($profile, $debugbar['time']));
-
             return $twig;
-
-        }
-        ,
-        Connection::class => function (ContainerInterface $container): Connection {
-            $config = new \Doctrine\DBAL\Configuration();
-            $connectionParams = array(
-                'driver' => 'pdo_mysql',
-                'host' => 'localhost',
-                'dbname' => 'chum',
-                'user' => 'root',
-                'password' => '',
-                'charset' => 'utf8',
-                'driverOptions' => array(
-                        // Turn on persistent connections
-                    PDO::ATTR_PERSISTENT => true,
-                        // Enable exceptions
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        // Emulate prepared statements
-                    PDO::ATTR_EMULATE_PREPARES => true,
-                        // Set default fetch mode to array
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        // Set character set
-                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
-                )
-            );
-
-            return DriverManager::getConnection($connectionParams, $config);
-        }
-        ,
-        PDO::class => function (ContainerInterface $container): PDO {
-            return $container->get(Connection::class)->getWrappedConnection();
         }
         ,
         MailerInterface::class => function (ContainerInterface $container) {
