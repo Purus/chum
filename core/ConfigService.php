@@ -43,7 +43,8 @@ class ConfigService
      */
     public function findCoreByKey(string $key)
     {
-        return $this->findByKey('base', $key);
+        $record =  $this->findByKey('base', $key);
+        return $record["value"];
     }
 
     public function update(string $plugin, string $key, string $value)

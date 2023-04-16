@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/assets/favicon.png" />
 
     {% for url in styles %}
     <link rel="stylesheet" href="{{url}}" />
@@ -117,7 +118,13 @@
         {% endblock %}
     </div>
     <!-- Content -->
-    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+    {% for url in scripts %}
+    <script src="{{url}}" />
+    {% endfor %}
+    <script>
+        import { Input, initTE } from "tw-elements";
+        initTE({ Input });
+    </script>
 </body>
 
 </html>

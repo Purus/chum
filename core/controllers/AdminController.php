@@ -5,6 +5,7 @@ namespace Chum\Core\Controllers;
 
 use Chum\ChumDb;
 use Chum\Core\BaseController;
+use Chum\Core\ConfigService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,14 +20,17 @@ class AdminController extends BaseController
     }
     public function general(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $db = new InstallDbConfig();
-        $db->setDbHost('localhost');
-        $db->setDbUser('root');
-        $db->setDbName('chum');
-        $db->setDbPassword('root');
-        $db->setDbPrefix('chum_');
+        $siteTagline = ConfigService::getInstance()->findCoreByKey("site_tagline");
+        $siteEmail = ConfigService::getInstance()->findCoreByKey("site_email");
+        $siteUrl = ConfigService::getInstance()->findCoreByKey("site_url");
 
-        $form = $this->createForm(InstallDbConfigType::class, $db);
+
+        $config = new AdminSettingsGeneralConfig();
+        $config->setSiteEmail($siteEmail);
+        $config->setSiteTagline($siteTagline);
+        $config->setSiteUrl($siteUrl);
+
+        $form = $this->createForm(AdminSettingsGeneralConfigType::class, $config);
 
         $req = Request::createFromGlobals();
 
@@ -34,15 +38,13 @@ class AdminController extends BaseController
 
         //TODO Validate database configs before goign to next step using Symfony forms event handler
         if ($form->isSubmitted() && $form->isValid()) {
-            $db = $form->getData();
+            $config = $form->getData();
 
-            $this->session->set('dbName', $db->getDbName());
-            $this->session->set('dbHost', $db->getDbHost());
-            $this->session->set('dbUser', $db->getDbUser());
-            $this->session->set('dbPassword', $db->getDbPassword());
-            $this->session->set('dbPrefix', $db->getDbPrefix());
+            $config->getSiteEmail();
+            $config->getSiteTagline();
+            $config->getSiteUrl();
 
-            return $this->redirectByName($response, "install.finish");
+            return $this->redirectByName($response, "admin.basic");
         }
 
         $this->setPageTitle("General Settings");

@@ -34,7 +34,8 @@ return function (ContainerBuilder $containerBuilder) {
 
     $containerBuilder->addDefinitions([
         Twig::class => function (ContainerInterface $c): Twig {
-            $defaultFormTheme = 'tailwind_2_layout.html.twig';
+            $defaultFormTheme = 'form.html.twig';
+            // $defaultFormTheme = 'tailwind_2_layout.html.twig';
 
             $appVariableReflection = new \ReflectionClass('\Symfony\Bridge\Twig\AppVariable');
             $vendorTwigBridgeDirectory = dirname($appVariableReflection->getFileName());
@@ -50,7 +51,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'cache' => CHUM_CACHE_PATH,
                 'autoescape' => false,
                 'debug' => true,
-                'form_themes' => 'form_div_layout.html.twig'
+                // 'form_themes' => 'form.html.twig'
             ]);
 
             $twig->getEnvironment()->addGlobal('locale', $translator->getLocale());

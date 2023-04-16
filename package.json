@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "private": "true",
   "scripts": {
-    "build": "tailwindcss build -i ./tailwind.css -o ./assets/css/output.css"
+    "build": "tailwindcss build -i ./tailwind.css -o ./themes/chum-chum/css/output.css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tw-elements": "^1.0.0-beta1",
-    "tailwindcss": "^3.2.7"
+    "tailwindcss": "^3.2.7",
+    "tw-elements": "^1.0.0-beta1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3"
   }
 }

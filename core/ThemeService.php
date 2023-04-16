@@ -31,8 +31,8 @@ class ThemeService
      */
     public function getCurrentThemeName()
     {
-        $themConfig = ConfigService::getInstance()->findCoreByKey("current_theme");
-        return $themConfig['value'];
+        $themName = ConfigService::getInstance()->findCoreByKey("current_theme");
+        return $themName;
     }
 
     /**

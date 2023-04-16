@@ -127,6 +127,8 @@ abstract class BaseController
 
         $themeName = ThemeService::getInstance()->getCurrentThemeName();
 
+        $this->addScript("https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js");
+
         $this->addStyle("/themes/$themeName/css/output.css");
         $this->addStyle("/themes/$themeName/css/icons.css");
         $this->addStyle("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap");
